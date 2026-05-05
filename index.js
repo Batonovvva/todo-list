@@ -80,6 +80,22 @@ class Task extends Component {
     this.task = task;
     this.onToggleTask = onToggleTask;
     this.onDeleteTask = onDeleteTask;
+
+    this.state = {
+      isDeleteConfirmed: false,
+    };
+
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+  }
+
+  onDeleteClick() {
+    if (this.state.isDeleteConfirmed) {
+      this.onDeleteTask();
+      return;
+    }
+
+    this.state.isDeleteConfirmed = true;
+    this.update();
   }
 
   render() {
@@ -90,8 +106,8 @@ class Task extends Component {
         { eventName: "change", callback: this.onToggleTask },
       ]),
       createElement("label", this.task.completed ? { class: "completed-task" } : {}, this.task.title),
-      createElement("button", {}, "🗑️", [
-        { eventName: "click", callback: this.onDeleteTask },
+      createElement("button", this.state.isDeleteConfirmed ? { class: "delete-confirmed" } : {}, "🗑️", [
+        { eventName: "click", callback: this.onDeleteClick },
       ]),
     ]);
   }
