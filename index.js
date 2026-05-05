@@ -62,6 +62,8 @@ class TodoList extends Component {
 
     this.onAddTask = this.onAddTask.bind(this);
     this.onAddInputChange = this.onAddInputChange.bind(this);
+    this.onToggleTask = this.onToggleTask.bind(this);
+    this.onDeleteTask = this.onDeleteTask.bind(this);
   }
 
   onAddTask() {
@@ -84,6 +86,16 @@ class TodoList extends Component {
     this.state.newTaskTitle = event.target.value;
   }
 
+  onToggleTask(taskIndex) {
+    this.state.tasks[taskIndex].completed = !this.state.tasks[taskIndex].completed;
+    this.update();
+  }
+
+  onDeleteTask(taskIndex) {
+    this.state.tasks.splice(taskIndex, 1);
+    this.update();
+  }
+
   render() {
     return createElement("div", { class: "todo-list" }, [
       createElement("h1", {}, "TODO List"),
@@ -92,6 +104,7 @@ class TodoList extends Component {
           id: "new-todo",
           type: "text",
           placeholder: "Задание",
+          value: this.state.newTaskTitle,
         }, null, [
           { eventName: "input", callback: this.onAddInputChange },
         ]),
@@ -99,13 +112,17 @@ class TodoList extends Component {
           { eventName: "click", callback: this.onAddTask },
         ]),
       ]),
-      createElement("ul", { id: "todos" }, this.state.tasks.map((task) => (
+      createElement("ul", { id: "todos" }, this.state.tasks.map((task, index) => (
         createElement("li", {}, [
           createElement("input", task.completed
             ? { type: "checkbox", checked: "checked" }
-            : { type: "checkbox" }),
-          createElement("label", {}, task.title),
-          createElement("button", {}, "🗑️")
+            : { type: "checkbox" }, null, [
+            { eventName: "change", callback: () => this.onToggleTask(index) },
+          ]),
+          createElement("label", task.completed ? { class: "completed-task" } : {}, task.title),
+          createElement("button", {}, "Удалить", [
+            { eventName: "click", callback: () => this.onDeleteTask(index) },
+          ]),
         ])
       ))),
     ]);

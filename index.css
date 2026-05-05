@@ -59,3 +59,7 @@ button {
 .todo-list li label {
     flex-grow: 1;
 }
+
+.todo-list li label.completed-task {
+    color: #888;
+}
