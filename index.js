@@ -1,4 +1,4 @@
-﻿function createElement(tag, attributes, children) {
+function createElement(tag, attributes, children, callbacks) {
   const element = document.createElement(tag);
 
   if (attributes) {
@@ -21,6 +21,12 @@
     element.appendChild(children);
   }
 
+  if (Array.isArray(callbacks)) {
+    callbacks.forEach(({ eventName, callback }) => {
+      element.addEventListener(eventName, callback);
+    });
+  }
+
   return element;
 }
 
@@ -39,12 +45,34 @@ class TodoList extends Component {
     super();
 
     this.state = {
+      newTaskTitle: "",
       tasks: [
         { title: "Сделать домашку", completed: false },
         { title: "Сделать практику", completed: false },
         { title: "Пойти домой", completed: false },
       ],
     };
+
+    this.onAddTask = this.onAddTask.bind(this);
+    this.onAddInputChange = this.onAddInputChange.bind(this);
+  }
+
+  onAddTask() {
+    const trimmedTitle = this.state.newTaskTitle.trim();
+
+    if (!trimmedTitle) {
+      return;
+    }
+
+    this.state.tasks.push({
+      title: trimmedTitle,
+      completed: false,
+    });
+    this.state.newTaskTitle = "";
+  }
+
+  onAddInputChange(event) {
+    this.state.newTaskTitle = event.target.value;
   }
 
   render() {
@@ -55,8 +83,12 @@ class TodoList extends Component {
           id: "new-todo",
           type: "text",
           placeholder: "Задание",
-        }),
-        createElement("button", { id: "add-btn" }, "+"),
+        }, null, [
+          { eventName: "input", callback: this.onAddInputChange },
+        ]),
+        createElement("button", { id: "add-btn" }, "+", [
+          { eventName: "click", callback: this.onAddTask },
+        ]),
       ]),
       createElement("ul", { id: "todos" }, this.state.tasks.map((task) => (
         createElement("li", {}, [
