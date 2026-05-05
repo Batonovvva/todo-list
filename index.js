@@ -38,6 +38,13 @@ class Component {
     this._domNode = this.render();
     return this._domNode;
   }
+
+  update() {
+    const newDomNode = this.render();
+
+    this._domNode.replaceWith(newDomNode);
+    this._domNode = newDomNode;
+  }
 }
 
 class TodoList extends Component {
@@ -69,6 +76,8 @@ class TodoList extends Component {
       completed: false,
     });
     this.state.newTaskTitle = "";
+
+    this.update();
   }
 
   onAddInputChange(event) {
